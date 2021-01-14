@@ -10,10 +10,6 @@ function initMap() {
   }).addTo(map);
 }
 
-function fetchBoundaries(name) {
-  return fetch(`boundaries/${name}.json`).then(rsp => rsp.json());
-}
-
 function drawPolygon(polygon, radius) {
   const linePolygon = polygon.map(arr => [arr[1], arr[0]]);
   
@@ -37,7 +33,7 @@ function drawPolygon(polygon, radius) {
 function loadMap(name, radius) {
   initMap();
   
-  fetchBoundaries(name).then(data => {
+  fetch(`city/${name}`).then(rsp => rsp.json()).then(data => {
     const polygons = data.features[0].geometry.coordinates;
 
     if (data.features[0].geometry.type === 'Polygon') {
@@ -57,54 +53,23 @@ function loadMap(name, radius) {
   });
 }
 
-let city = 0, distance = 0;
+const app = new Vue({
+  el: '#app',
+  data: {
+    selectedCity: 'München',
+    cities: [],
+  },
+  methods: {
+    changeParameter() {
+      loadMap(this.selectedCity, 15);
+    }
+  }
+});
 
-const maps = [
-  {name: 'München', key: 'munich'},
-  {name: 'Dachau', key: 'dachau'},
-  {name: 'Nürnberg', key: 'nuremberg'},
-  {name: 'Deggendorf', key: 'deggendorf'},
-  {name: 'Erding', key: 'erding'},
-  {name: 'Berchtesgaden', key: 'berchtesgaden'},
-  {name: 'Passau', key: 'passau'},
-  {name: 'Kulmbach', key: 'kulmbach'},
-  {name: 'Regen', key: 'regen'},
-  {name: 'Bodenmais', key: 'bodenmais'},
-  {name: 'Hof', key: 'hof'},
-  {name: 'Bayreuth', key: 'bayreuth'},
-  {name: 'Fürth', key: 'furth'},
-  {name: 'Hamburg', key: 'hamburg'},
-];
-
-const distances = [15, 50, 100];
-
-const citySelect = document.getElementById("city-select");
-
-for (let mapItem of maps) {
-  const option = document.createElement("option");
-  option.text = mapItem.name;
-  citySelect.add(option);
-}
-
-citySelect.onchange = function() {
-  city = citySelect.selectedIndex;
-  loadMap(maps[city].key, distances[distance]);
-};
-
-const distanceSelect = document.getElementById("distance-select");
-
-for (let distance of distances) {
-  const option = document.createElement("option");
-  option.text = `${distance} km`;
-  distanceSelect.add(option);
-}
-
-distanceSelect.onchange = function() {
-  distance = distanceSelect.selectedIndex;
-  loadMap(maps[city].key, distances[distance]);
-};
-
-loadMap(maps[city].key, distances[distance]);
-
-
-
+// Fetch all cities
+fetch('/cities').then(rsp => rsp.json()).then(data => {
+  app.cities = data;
+  
+  // Initial map load
+  app.changeParameter();
+});

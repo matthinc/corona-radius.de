@@ -6,7 +6,8 @@
 	<script src="deps/leaflet.js"></script>
 	<link rel="stylesheet" href="deps/leaflet.css" />
 	<link rel="stylesheet" href="deps/bootstrap.min.css" />	
-	<link rel="stylesheet" href="main.css" />
+	<link rel="stylesheet" href="resources/main.css" />
+	<script src="deps/vue.js"></script>
 	<title>Corona Radius Tool</title>
   </head>
   <body>
@@ -15,12 +16,12 @@
 		<a class="navbar-brand" href="#">Corona Radius Tool</a>
 	  </div>
 	</nav>
-	<div class="card m-2">
+	<div class="card m-2" id="app">
 	  <div class="card-body">
-		Aufgrund der neuen Coronabeschränkungen ist es in bestimmten Gebieten nicht mehr erlaubt, sich weiter als eine bestimmte Entfernung
+		Aufgrund der neuen Coronabeschränkungen ist es in bestimmten Gebieten nicht mehr erlaubt, sich weiter als 15km
 		von seinem Heimatort zu entfernen. Dieses Tool zeigt den Bereich an, in dem man sich ohne Begründung aufhalten darf.<br />
 		In jedem Punkt des roten Bereiches ist der nächste Punkt der Stadtgrenze maximal
-		15km (oder eine andere gewählte Distanz) entfernt. Für die Richtigkeit der Daten wird keine Haftung übernommen!
+		15km entfernt. Für die Richtigkeit der Daten wird keine Haftung übernommen!
 		<br />
 		Weitere Städte werden ergänzt.
 		<br />
@@ -28,14 +29,13 @@
 		<br />
 		Karten von <a href="https://www.openstreetmap.org">OpenStreetMap</a>
 		<div class="mt-3">
-		  <select id="city-select" class="form-select"></select>
-		</div>
-		<div class="mt-3">
-		  <select id="distance-select" class="form-select"></select>
+		  <select id="city-select" class="form-select" v-model="selectedCity" v-on:change="changeParameter">
+			<option v-for="city in cities">{{ city }}</option>
+		  </select>
 		</div>
 	  </div>
 	</div>
 	<div id="map"></div>
-	<script src="hometown_radius.js"></script>
+	<script src="resources/hometown_radius.js"></script>
   </body>
 </html>

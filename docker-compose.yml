@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-    apache:
-        image: httpd:2.4
-        ports:
-        - 3005:80
-        container_name: apache_radius
-        restart: always
-        volumes:
-        - ./www:/usr/local/apache2/htdocs/
+  radius:
+    build: .
+    volumes:
+      - ./boundaries:/app/boundaries
+    container_name: corona-radius
+    restart: always
+    ports:
+      - 3005:3000
