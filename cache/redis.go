@@ -1,10 +1,10 @@
 package cache
 
 import (
-    "context"
+	"context"
 	"fmt"
 	
-    "github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v8"
 )
 
 type Cache struct {
@@ -14,10 +14,10 @@ type Cache struct {
 
 func NewCache(addr string) *Cache {
 	db := redis.NewClient(&redis.Options{
-        Addr:     addr,
-        Password: "",
-        DB:       0,
-    })
+		Addr:     addr,
+		Password: "",
+		DB:       0,
+	})
 
 	return &Cache{ db: db, ctx: context.Background() }
 }
