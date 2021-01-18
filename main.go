@@ -4,10 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"path/filepath"
 	"net/http"
+	"os"
+	"io/ioutil"
+
+	"github.com/matthinc/corona-radius.de/cache"
 )
+
+var redisCache = cache.NewCache(os.Getenv("REDIS_HOST"))
 
 func main() {
 	router := gin.Default()
+
+	loadCitiesFromFS()
 
 	router.StaticFile("/", "./static/index.html")
 	router.Static("/resources", "./static/resources")
@@ -20,45 +28,18 @@ func main() {
 }
 
 func getCities(c *gin.Context) {
-	filenames, err := getCitiesFromFS()
-
-	if err == nil {
-		c.JSON(http.StatusOK, filenames)
-	} else {
-		c.Status(http.StatusInternalServerError)
-	}
+	c.JSON(http.StatusOK, redisCache.GetCities())
 }
 
 func getCity(c *gin.Context) {
-	filenames, err := getCitiesFromFS()
-	cityName := c.Param("name")
-
-	if err != nil {
-		c.Status(http.StatusInternalServerError)
-	}
-
-	for _, filename := range filenames {
-		if filename == cityName {
-			c.File("./boundaries/" + filename)
-		}
-	}
-
-	c.Status(http.StatusNotFound)
+	c.Data(http.StatusOK, "application/json", []byte(redisCache.GetCity(c.Param("name"))))
 }
 
-func getCitiesFromFS() ([]string, error) {
-	files, err := filepath.Glob("./boundaries/*")
-
-	if err != nil {
-		return nil, err
+func loadCitiesFromFS() {
+	files, _ := filepath.Glob("./boundaries/*")
+	for _, file := range(files) {
+		content, _ := ioutil.ReadFile(file)
+		redisCache.LoadCity(filepath.Base(file), string(content))
 	}
-
-	filenames := make([]string, len(files))
-
-	for i, fn := range files {
-		filenames[i] = filepath.Base(fn)
-	}
-
-	return filenames, nil
 }
 
