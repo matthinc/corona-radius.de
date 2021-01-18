@@ -17,9 +17,9 @@ func main() {
 
 	loadCitiesFromFS()
 
-	router.StaticFile("/", "./static/index.html")
-	router.Static("/resources", "./static/resources")
-	router.Static("/deps", "./static/deps")
+	router.StaticFile("/", "./frontend/index.html")
+	router.Static("/resources", "./frontend/resources")
+	router.Static("/deps", "./frontend/deps")
 	
 	router.GET("/cities", getCities)
 	router.GET("/city/:name", getCity)
