@@ -5,7 +5,7 @@ function initMap() {
   
   map = L.map('map').setView([48, 11], 13);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 }
@@ -17,14 +17,14 @@ function drawPolygon(polygon, radius) {
   polyline.addTo(map);
 
   const circlesPane = map.createPane('circles');
-  circlesPane.style.opacity = 0.3;
+  circlesPane.style.opacity = 0.15;
 
   for (let i = 0; i < linePolygon.length; i++) {
 
     if (linePolygon.length < 100 || i % 25 == 0) {
       const pos = linePolygon[i];
       
-      const circle = L.circle(new L.LatLng(pos[0], pos[1]), radius * 1000, { pane: 'circles', weight: 0, fillColor: 'red', fillOpacity: 1});
+      const circle = L.circle(new L.LatLng(pos[0], pos[1]), radius * 1000, { pane: 'circles', weight: 0, fillColor: '#0000ff', fillOpacity: 1});
       circle.addTo(map);
     }
   }
