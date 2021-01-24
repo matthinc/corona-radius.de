@@ -45,3 +45,7 @@ func (c *Cache) GetCity(key string) string {
 	
 	return city
 }
+
+func (c *Cache) FlushAll() {
+	c.db.FlushAll(c.ctx)
+}

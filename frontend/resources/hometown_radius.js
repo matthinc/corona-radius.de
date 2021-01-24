@@ -10,46 +10,37 @@ function initMap() {
   }).addTo(map);
 }
 
-function drawPolygon(polygon, radius) {
-  const linePolygon = polygon.map(arr => [arr[1], arr[0]]);
-  
-  const polyline = L.polyline(linePolygon, { color: 'blue'});
-  polyline.addTo(map);
-
-  const circlesPane = map.createPane('circles');
-  circlesPane.style.opacity = 0.15;
-
-  for (let i = 0; i < linePolygon.length; i++) {
-
-    if (linePolygon.length < 100 || i % 25 == 0) {
-      const pos = linePolygon[i];
-      
-      const circle = L.circle(new L.LatLng(pos[0], pos[1]), radius * 1000, { pane: 'circles', weight: 0, fillColor: '#0000ff', fillOpacity: 1});
-      circle.addTo(map);
-    }
-  }
-}
-
 function loadMap(name, radius) {
   initMap();
   
   fetch(`city/${name}`).then(rsp => rsp.json()).then(data => {
-    const polygons = data.features[0].geometry.coordinates;
+    map.setView(new L.LatLng(
+      (data.Bounds.Minlat + data.Bounds.Maxlat) / 2,
+      (data.Bounds.Minlon + data.Bounds.Maxlon) / 2,
+      5
+    ));
 
-    if (data.features[0].geometry.type === 'Polygon') {
-      const coordinates = polygons[0][0];
-      map.setView(new L.LatLng(coordinates[1], coordinates[0]), 10);
-      drawPolygon(polygons[0], radius);
-    }
+    const circlesPane = map.createPane('circles');
+    circlesPane.style.opacity = 0.3;
 
-    if (data.features[0].geometry.type === 'MultiPolygon') {
-      const coordinates = polygons[0][0][0];
-      map.setView(new L.LatLng(coordinates[1], coordinates[0]), 10);
+    const ways = data.Members.filter(m => m.Type === 'way' && m.Geometry).map(w => w.Geometry);
 
-      for (let polygon of polygons) {
-        drawPolygon(polygon[0], radius);
+    const polyline = L.polyline(ways.map(member => member.map(dat => [dat.Lat, dat.Lon])), { color: '#4287f5'});
+    
+    polyline.addTo(map);
+    
+    ways.forEach(way => {
+      for (let i = 0; i < way.length; i++) {
+        
+        if (i % Math.min(100, way.length - 1) == 0) {
+          
+          const circle = L.circle(new L.LatLng(way[i].Lat, way[i].Lon), radius * 1000, { pane: 'circles', weight: 0, fillColor: '#4287f5', fillOpacity: 1});
+          circle.addTo(map);
+          
+        }
+        
       }
-    }
+    });
   });
 }
 
