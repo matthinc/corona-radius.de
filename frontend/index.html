@@ -5,10 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src="deps/leaflet.js"></script>
 	<link rel="stylesheet" href="deps/leaflet.css" />
-	<link rel="stylesheet" href="deps/bootstrap.min.css" />	
+	<link rel="stylesheet" href="deps/bootstrap.min.css" />
+	<link rel="stylesheet" href="deps/vue-select.css" />	
 	<link rel="stylesheet" href="resources/main.css" />
-	<script src="deps/vue.js"></script>
 	<title>Corona Radius Tool</title>
+	<script src="deps/vue.js"></script>
+	<script src="deps/vue-select.js"></script>
   </head>
   <body>
 	<nav class="navbar navbar-dark bg-dark">
@@ -23,15 +25,16 @@
 		In jedem Punkt des blauen Bereiches ist der nächste Punkt der Stadtgrenze maximal
 		15km entfernt. Für die Richtigkeit der Daten wird keine Haftung übernommen!
 		<br />
-		Weitere Städte werden ergänzt.
-		<br />
 		Ein Freizeitprojekt von <a href="https://mrupp.eu">Matthias Rupp</a>
-		<br />
-		Karten von <a href="https://www.openstreetmap.org">OpenStreetMap</a>
 		<div class="mt-3">
-		  <select id="city-select" class="form-select" v-model="selectedCity" v-on:change="changeParameter">
-			<option v-for="city in cities">{{ city }}</option>
-		  </select>
+		  <v-select
+			id="city-select"
+			:clearable="false"
+			v-model="selectedCity"
+			v-on:input="changeParameter"
+			:options="cities"
+			data-live-search="true"
+			:get-option-label="o => o.split(':')[1]" />
 		</div>
 	  </div>
 	</div>

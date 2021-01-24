@@ -49,3 +49,8 @@ func (c *Cache) GetCity(key string) string {
 func (c *Cache) FlushAll() {
 	c.db.FlushAll(c.ctx)
 }
+
+func (c *Cache) Size() int64 {
+	length, _ := c.db.HLen(c.ctx, "cities").Result()
+	return length
+}

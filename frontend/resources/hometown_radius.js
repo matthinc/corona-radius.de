@@ -17,8 +17,7 @@ function loadMap(name, radius) {
     map.setView(new L.LatLng(
       (data.Bounds.Minlat + data.Bounds.Maxlat) / 2,
       (data.Bounds.Minlon + data.Bounds.Maxlon) / 2,
-      5
-    ));
+    ), 10);
 
     const circlesPane = map.createPane('circles');
     circlesPane.style.opacity = 0.3;
@@ -44,10 +43,14 @@ function loadMap(name, radius) {
   });
 }
 
+
+
+Vue.component('v-select', VueSelect.VueSelect);
+
 const app = new Vue({
   el: '#app',
   data: {
-    selectedCity: 'München',
+    selectedCity: 'de:München',
     cities: [],
   },
   methods: {

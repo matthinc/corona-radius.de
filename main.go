@@ -6,21 +6,23 @@ import (
 	"os"
 	"encoding/json"
 	"io/ioutil"
+	"fmt"
 
 	"github.com/matthinc/corona-radius.de/cache"
 	"github.com/matthinc/corona-radius.de/overpass"
 )
-
-type city struct {
-	Name string
-}
 
 var redisCache = cache.NewCache(os.Getenv("REDIS_HOST"))
 
 func main() {
 	router := gin.Default()
 
-	go downloadCityBoundaries()
+	if redisCache.Size() == 0 {
+		fmt.Println("Cache empty - start import")
+		go importCities()
+	} else {
+		fmt.Println("Cache exists")
+	}
 	
 	router.StaticFile("/", "./frontend/index.html")
 	router.Static("/resources", "./frontend/resources")
@@ -40,19 +42,18 @@ func getCity(c *gin.Context) {
 	c.Data(http.StatusOK, "application/json", []byte(redisCache.GetCity(c.Param("name"))))
 }
 
-func downloadCityBoundaries() {
+func importCities() {
 	redisCache.FlushAll()
 
-	var cities []city
+	var cities []string
 
 	citiesFile, _ := ioutil.ReadFile("./germany.json")
 	json.Unmarshal(citiesFile, &cities)
 
 	for _, city := range cities {
-		loadCityByName(city.Name)
-	}
+	 	loadCityByName(city)
+	 }
 	
-	loadCityByName("Emskirchen")
 }
 
 func loadCityByName(name string) {
